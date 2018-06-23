@@ -4,8 +4,8 @@
 	<title>Data Science Engineering Club</title>
 	 <!-- add bootstrap css file -->
 
-      <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-      <link rel="stylesheet" type="text/css" href="css/main.css">
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
+      <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/main.css') }}">
 
 </head>
 <body>
@@ -85,7 +85,7 @@
 	  <h1 class="text-center">About Us</h1>
 		<div class="row">
 			<div class="col-lg-4 col-md-4 col-sm-12">
-				<img src="images/DSEC17.jpeg" class="img-fluid">
+				<img src="{{ url_for('static',filename='images/DSEC17.jpeg') }}" class="img-fluid">
 				<!-- <span class="text-justify">Morning</span> -->
 			</div>
 			<div class="col-lg-8 col-md-8 col-sm-12 desc">
@@ -110,21 +110,21 @@
 	   <h1 class="text-center">Meet our members</h1>
 		<div class="row">
 			<div class="col-lg-3 col-md-3 col-sm-12 item">
-				<img src="images/DSEC.jpeg" class="img-fluid" alt="members">
+				<img src={{ url_for('static',filename='images/DSEC.jpeg') }} class="img-fluid" alt="members">
 				<div class="des">
 				 	Presentations
 				 </div>
 				<span class="text-muted">Morning</span>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 item">
-				<img src="images/DSEC2.jpeg" class="img-fluid" alt="members">
+				<img src={{ url_for('static',filename='images/DSEC2.jpeg') }} class="img-fluid" alt="members">
 				<div class="des">
 				 	 Networking
 				 </div>
 				<span class="text-muted">Break</span>
 			</div>
 			<div class="col-lg-3 col-md-3 col-sm-12 item">
-				<img src="images/DSEC3.jpeg" class="img-fluid" alt="members">
+				<img src={{ url_for('static',filename='images/DSEC3.jpeg') }} class="img-fluid" alt="members">
 				<div class="des">
 				 	 Workshops
 				 </div>
@@ -145,7 +145,7 @@
 			<div class="col-md-4 col-lg-4 col-sm-12">
 				<div class="card">
 					<div class="card-img">
-						<img src="images/posts/Kaggle.PNG" class="img-fluid">
+						<img src={{ url_for('static',filename='images/posts/Kaggle.PNG') }} class="img-fluid">
 					</div>
 
 					<div class="card-body">
@@ -163,7 +163,7 @@
 			<div class="col-md-4 col-lg-4 col-sm-12">
 				<div class="card">
 					<div class="card-img">
-						<img src="images/posts/DSEF.PNG" class="img-fluid">
+						<img src={{ url_for('static',filename='images/posts/DSEF.PNG') }} class="img-fluid">
 					</div>
 
 					<div class="card-body">
@@ -181,7 +181,7 @@
 			<div class="col-md-4 col-lg-4 col-sm-12">
 				<div class="card">
 					<div class="card-img">
-						<img src="images/posts/Clustering.PNG" class="img-fluid">
+						<img src={{ url_for('static',filename='images/posts/Clustering.PNG') }} class="img-fluid">
 					</div>
 
 					<div class="card-body">
@@ -241,9 +241,9 @@
 	</div>
 </div>
 <!-- add Javasscript file from js file -->
-<script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript" src="js/bootstrap.min.js"></script>
-<script type="text/javascript" src='js/main.js'></script>
+<script type="text/javascript" src="{{ url_for('static',filename='js/jquery.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='js/bootstrap.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static',filename='js/main.js') }}"></script>
 
 </body>
 </html>

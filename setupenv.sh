@@ -2,6 +2,7 @@ printf '===========================Install the Components from the Ubuntu Reposi
 sudo apt-get update
 sudo apt-get install -y python3-pip python3-dev nginx
 
+pip install --upgrade pip
 sudo pip3 install virtualenv
 
 printf '===========================Checkout the project from GitHub============================== \n'
@@ -49,6 +50,8 @@ server {
     }
 }
 '
+#TODO remove and replace server_domain_or_IP with the hostname
+sudo sed -i "s#server_domain_or_IP#$(curl -s ifconfig.co)#g" /etc/nginx/sites-available/datascience-club.service
 sudo ln -s /etc/nginx/sites-available/datascience-club.service /etc/nginx/sites-enabled
 
 sudo nginx -t

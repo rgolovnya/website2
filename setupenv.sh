@@ -54,7 +54,7 @@ setupStartScript () {
 
     # create a .env file for the environment variables
      sudo bash -c 'cat > /home/ubuntu/website2/\.env <<EOF
-    export FLASK_CONFIG=development
+    export FLASK_APP=main.py
     '
 
     # create a startup script to start the virtual environment,
@@ -68,7 +68,7 @@ setupStartScript () {
     cd website2
 
     source .env
-    gunicorn manage:app
+    gunicorn wsgi
     '
 }
 

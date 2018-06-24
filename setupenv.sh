@@ -24,7 +24,7 @@ setupApp () {
     source env/bin/activate
     sudo git clone https://github.com/rgolovnya/website2.git
     cd website2
-    #pip3 install -r requirements.txt
+    pip3 install -r requirements.txt
 }
 
 configureNginx () {

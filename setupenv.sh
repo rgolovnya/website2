@@ -1,109 +1,57 @@
-#!/usr/bin/env bash
+printf '===========================Install the Components from the Ubuntu Repositories============================== \n'
+udo apt-get update
+sudo apt-get install python3-pip python3-dev nginx
 
-# Setup python3.6 as the default for python3
-setupEnvrionment () {
-    printf '===========================Setup the environment============================== \n'
+sudo pip3 install virtualenv
 
-    sudo apt-get update
-    sudo add-apt-repository -y ppa:deadsnakes/ppa
-    sudo apt-get update
+printf '===========================Checkout the project from GitHub============================== \n'
+git clone https://github.com/rgolovnya/website2
+cd website2
 
-    printf '================== Set python3.6 as the default for python3 ================== \n'
-    sudo apt-get install -y python3.6 python3-pip nginx python3.6-gdbm
-    sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.5 1
-    sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 10
-    sudo update-alternatives --config -y python3
-    pip3 install virtualenv
-}
+printf '===========================Create a Python Virtual Environment============================== \n'
+virtualenv env
+source env/bin/activate
 
+printf '===========================Set Up a Flask Application============================== \n'
+pip install gunicorn flask
 
-setupApp () {
-    printf '===========================Setup the Application ============================== \n'
-    pwd
-    virtualenv -p python3 env
-    source env/bin/activate
-    sudo git clone https://github.com/rgolovnya/website2.git
-    cd website2
-    pip3 install -r requirements.txt
-}
+deactivate
 
-configureNginx () {
-    printf '================================= Configure nginx ============================== \n'
+printf '===========================Create a systemd Unit File============================== \n'
+sudo bash -c 'cat > /etc/systemd/system/datascience-club.service <<EOF
+[Unit]
+Description=Gunicorn instance to serve datascience-club
+After=network.target
 
-    # Create the nginx configurations
-     sudo bash -c 'cat > /etc/nginx/sites-available/datascience-club <<EOF
-    server {
+[Service]
+User=ubuntu
+Group=www-data
+WorkingDirectory=/home/ubuntu/website2
+Environment="PATH=/home/ubuntu/website2/env/bin"
+ExecStart=/home/ubuntu/website2/env/bin/gunicorn --workers 3 --bind unix:datascience-club.sock -m 007 wsgi:application
+
+[Install]
+WantedBy=multi-user.target
+'
+
+sudo systemctl start datascience-club
+sudo systemctl enable datascience-club
+
+printf '===========================Configuring Nginx to Proxy Requests============================== \n'
+sudo bash -c 'cat > /etc/nginx/sites-available/datascience-club.service <<EOF
+server {
     listen 80;
-        location / {
-            proxy_pass http://127.0.0.1:8000/;
-            proxy_set_header Host \$host;
-            proxy_set_header X-Forwarded-Proto \$scheme;
-            proxy_set_header X-Real-IP \$remote_addr;
-            proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-        }
+    server_name server_domain_or_IP;
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/ubuntu/website2/datascience-club.sock;
     }
-    '
-
-    sudo rm -rf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-    sudo ln -s /etc/nginx/sites-available/datascience-club /etc/nginx/sites-enabled/
-    sudo systemctl restart nginx
 }
+'
+sudo ln -s /etc/nginx/sites-available/datascience-club.service /etc/nginx/sites-enabled
 
-setupStartScript () {
-    printf '=========================== Create a startup script =========================== \n'
+sudo nginx -t
+sudo systemctl restart nginx
 
-    # create a .env file for the environment variables
-     sudo bash -c 'cat > /home/ubuntu/website2/\.env <<EOF
-    export FLASK_APP=main.py
-    '
-
-    # create a startup script to start the virtual environment,
-    # load the environment variables and start the app
-     sudo bash -c 'cat > /home/ubuntu/website2/startenv.sh <<EOF
-    #!/bin/bash
-
-    cd /home/ubuntu
-    ls
-    source env/bin/activate
-    cd website2
-
-    source .env
-    gunicorn wsgi
-    '
-}
-
-setupStartService () {
-    printf '=========================== Configure startup service =========================== \n'
-
-    # Create service that starts the app from the startup script
-     sudo bash -c 'cat > /etc/systemd/system/datascience-club.service <<EOF
-    [Unit]
-    Description=datascience-club startup service
-    After=network.target
-
-    [Service]
-    User=ubuntu
-    ExecStart=/bin/bash /home/ubuntu/website2/startenv.sh
-    Restart=always
-
-    [Install]
-    WantedBy=multi-user.target
-    '
-
-    sudo chmod 744 /home/ubuntu/website2/startenv.sh
-    sudo chmod 664 /etc/systemd/system/datascience-club.service
-    sudo systemctl daemon-reload
-    sudo systemctl enable datascience-club.service
-    sudo systemctl start datascience-club.service
-
-}
-
-run () {
-  setupEnvrionment
-  setupApp
-  configureNginx
-  setupStartScript
-  setupStartService
-}
-
-run
+sudo ufw allow 'Nginx Full'
